@@ -3,11 +3,11 @@
   <title>Hamster AI 出海笔记</title>
   
   <subtitle>记录 AI 出海实战、LLM 应用经验与高效提示词方法</subtitle>
-  <link href="http://example.com/atom.xml" rel="self"/>
+  <link href="https://playerlt.github.io/atom.xml" rel="self"/>
   
-  <link href="http://example.com/"/>
+  <link href="https://playerlt.github.io/"/>
   <updated>2025-12-20T12:49:58.918Z</updated>
-  <id>http://example.com/</id>
+  <id>https://playerlt.github.io/</id>
   
   <author>
     <name>Hamster</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>Hello World</title>
-    <link href="http://example.com/2025/12/20/hello-world/"/>
-    <id>http://example.com/2025/12/20/hello-world/</id>
+    <link href="https://playerlt.github.io/2025/12/20/hello-world/"/>
+    <id>https://playerlt.github.io/2025/12/20/hello-world/</id>
     <published>2025-12-20T12:49:58.918Z</published>
     <updated>2025-12-20T12:49:58.918Z</updated>
     
