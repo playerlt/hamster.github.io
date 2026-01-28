@@ -20,13 +20,16 @@
     var CONFIG = {"hostname":"playerlt.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="专注分享 AI 出海实战经验、大模型（LLM）使用技巧、Prompt Engineering 提示词设计、AI 产品落地与增长思路，适合独立开发者与 AI 创业者阅读。">
-<meta property="og:type" content="website">
+  <meta name="description" content="多智能体系统是为特定问题而生的特定解决方案，而非通用升级。Anthropic在官网介绍了多agent的构建经验 并总结出三种它们始终优于单agent的场景：防止上下文污染、通过并行提升全面性，以及通过专门化提升可靠性。本文将提供一个战略框架，帮助你判断何时应该“升级”。我们会探讨这三种场景，解释成功的核心设计原则，并指出那些可能浪费数月开发时间的常见陷阱。  你精心设计的多智能体系统，可能只是提示">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Hamster AI 出海笔记">
-<meta property="og:url" content="https://playerlt.github.io/index.html">
+<meta property="og:url" content="https://playerlt.github.io/2026/01/28/multiple-agents/index.html">
 <meta property="og:site_name" content="Hamster AI 出海笔记">
-<meta property="og:description" content="专注分享 AI 出海实战经验、大模型（LLM）使用技巧、Prompt Engineering 提示词设计、AI 产品落地与增长思路，适合独立开发者与 AI 创业者阅读。">
+<meta property="og:description" content="多智能体系统是为特定问题而生的特定解决方案，而非通用升级。Anthropic在官网介绍了多agent的构建经验 并总结出三种它们始终优于单agent的场景：防止上下文污染、通过并行提升全面性，以及通过专门化提升可靠性。本文将提供一个战略框架，帮助你判断何时应该“升级”。我们会探讨这三种场景，解释成功的核心设计原则，并指出那些可能浪费数月开发时间的常见陷阱。  你精心设计的多智能体系统，可能只是提示">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://playerlt.github.io/images/multiple-agent-vs-single-agent.png">
+<meta property="article:published_time" content="2026-01-28T09:55:11.844Z">
+<meta property="article:modified_time" content="2026-01-28T10:22:52.162Z">
 <meta property="article:author" content="Hamster">
 <meta property="article:tag" content="AI产品">
 <meta property="article:tag" content="AI出海">
@@ -39,21 +42,22 @@
 <meta property="article:tag" content="提示词工程">
 <meta property="article:tag" content="独立开发者">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://playerlt.github.io/images/multiple-agent-vs-single-agent.png">
 
-<link rel="canonical" href="https://playerlt.github.io/">
+<link rel="canonical" href="https://playerlt.github.io/2026/01/28/multiple-agents/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>Hamster AI 出海笔记</title>
+  <title> | Hamster AI 出海笔记</title>
   
 
 
@@ -154,9 +158,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -172,10 +177,9 @@
       <meta itemprop="name" content="Hamster AI 出海笔记">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
+        <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2026/01/28/multiple-agents/" class="post-title-link" itemprop="url">未命名</a>
-        </h2>
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -199,7 +203,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>多智能体系统是为特定问题而生的特定解决方案，而非通用升级。Anthropic在官网介绍了多agent的构建经验 并总结出三种它们始终优于单agent的场景：防止上下文污染、通过并行提升全面性，以及通过专门化提升可靠性。<br>本文将提供一个战略框架，帮助你判断何时应该“升级”。我们会探讨这三种场景，解释成功的核心设计原则，并指出那些可能浪费数月开发时间的常见陷阱。</p>
+        <p>多智能体系统是为特定问题而生的特定解决方案，而非通用升级。Anthropic在官网介绍了多agent的构建经验 并总结出三种它们始终优于单agent的场景：防止上下文污染、通过并行提升全面性，以及通过专门化提升可靠性。<br>本文将提供一个战略框架，帮助你判断何时应该“升级”。我们会探讨这三种场景，解释成功的核心设计原则，并指出那些可能浪费数月开发时间的常见陷阱。</p>
 <ol>
 <li>你精心设计的多智能体系统，可能只是提示词没写好<br>在架构复杂系统之前，开发者应当始终先从单一智能体开始。多智能体系统会引入显著的额外开销，包括更多潜在故障点、更多需要维护的提示词，以及大幅更高的 token 成本。很多时候，看似需要多个智能体，实际上是在暗示单一智能体的提示词尚未优化到位。<br>在 Anthropic，我们见过一些团队花了数月时间构建复杂的多智能体架构，最终却发现：只要改进单一智能体的提示词，就能达到同样的效果。<br>这一原则至关重要，因为它能为开发者节省大量时间和资源。先掌握构建一个强大单一智能体的基本功，团队就能避免不必要的复杂性，从一开始就打造更稳健、高效且具成本效益的解决方案。</li>
 <li>上下文保护：防止性能退化<br>使用多智能体系统的第一个、也是最重要的原因，是防止上下文污染。当一个智能体的上下文窗口被某个子任务的大量信息填满，而这些信息对下一个任务并不相关时，它的性能就会下降。子智能体通过“隔离”解决了这一问题，让每个智能体都在干净、专注于自身任务的上下文中运行。<br>例如，一个客服智能体既要查询订单历史，又要诊断技术问题。如果查询订单时把成千上万的 token（购买记录、物流信息等）加入上下文，那么它在推理技术问题时的能力就会被稀释。<br>多智能体方案可以将上下文隔离开来：专门启动一个订单查询智能体，负责检索并处理完整历史，然后只返回一个 50–100 token 的精简摘要。主智能体只接收关键信息，从而保持上下文简洁，专注解决用户的技术问题。</li>
@@ -208,91 +212,30 @@
 </ol>
 <p><img src="/../images/multiple-agent-vs-single-agent.png" alt="多agent vs 单agent"></p>
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://playerlt.github.io/2025/12/20/hello-world/">
+        
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Hamster">
-      <meta itemprop="description" content="专注分享 AI 出海实战经验、大模型（LLM）使用技巧、Prompt Engineering 提示词设计、AI 产品落地与增长思路，适合独立开发者与 AI 创业者阅读。">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hamster AI 出海笔记">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/12/20/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-12-20 20:49:58" itemprop="dateCreated datePublished" datetime="2025-12-20T20:49:58+08:00">2025-12-20</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/12/20/hello-world/" rel="prev" title="Hello World">
+      <i class="fa fa-chevron-left"></i> Hello World
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-
   
 
 
