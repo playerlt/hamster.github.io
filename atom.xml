@@ -6,7 +6,7 @@
   <link href="https://playerlt.github.io/atom.xml" rel="self"/>
   
   <link href="https://playerlt.github.io/"/>
-  <updated>2026-01-28T10:30:20.247Z</updated>
+  <updated>2026-03-13T03:06:13.881Z</updated>
   <id>https://playerlt.github.io/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Claude Code 迁移到 EC2：从合盖即断到 7×24 运行</title>
+    <link href="https://playerlt.github.io/2026/03/13/claude-code-ec2/"/>
+    <id>https://playerlt.github.io/2026/03/13/claude-code-ec2/</id>
+    <published>2026-03-12T16:00:00.000Z</published>
+    <updated>2026-03-13T03:06:13.881Z</updated>
+    
+    <content type="html"><![CDATA[<p>把 Claude Code 从本地 Mac 迁移到 EC2，核心动机很简单：本地跑 Agent 合盖就断，定时任务不可靠。迁移后变成 7×24 不间断运行。</p><h2 id="当前-openclaw-目录结构"><a href="#当前-openclaw-目录结构" class="headerlink" title="当前 .openclaw 目录结构"></a>当前 .openclaw 目录结构</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">~/.openclaw/</span><br><span class="line">├── openclaw.json          # 核心配置</span><br><span class="line">├── credentials/           # 认证信息（本地 API Key 等）</span><br><span class="line">├── workspace/             # 人格、记忆、技能</span><br><span class="line">├── agents/                # Agent 配置</span><br><span class="line">├── memory/                # 记忆文件</span><br><span class="line">├── cron/                  # 定时任务</span><br><span class="line">├── identity/              # 身份配置</span><br><span class="line">├── completions/           # 补全配置</span><br><span class="line">├── delivery-queue/        # 消息队列</span><br><span class="line">├── devices/               # 设备配置</span><br><span class="line">├── canvas/                # Canvas 相关</span><br><span class="line">├── feishu/                # 飞书集成</span><br><span class="line">├── browser/               # 浏览器相关</span><br><span class="line">├── media/                 # 媒体文件</span><br><span class="line">└── logs/                  # 日志</span><br></pre></td></tr></table></figure><h2 id="迁移步骤"><a href="#迁移步骤" class="headerlink" title="迁移步骤"></a>迁移步骤</h2><p><strong>1. 本地打包</strong></p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~</span><br><span class="line">tar -czf openclaw-backup.tar.gz .openclaw/</span><br></pre></td></tr></table></figure><p><strong>2. 传到 EC2</strong></p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rsync -avz openclaw-backup.tar.gz ubuntu@&lt;EC2_IP&gt;:~/</span><br></pre></td></tr></table></figure><p><strong>3. 云端解压</strong></p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh ubuntu@&lt;EC2_IP&gt;</span><br><span class="line">tar -xzf openclaw-backup.tar.gz -C ~/</span><br></pre></td></tr></table></figure><p><strong>4. 启动 Claude Code</strong></p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">claude</span><br></pre></td></tr></table></figure><h2 id="四个关键坑"><a href="#四个关键坑" class="headerlink" title="四个关键坑"></a>四个关键坑</h2><p><strong>坑 1 - 认证方式</strong>：本地用 API Key（存在 <code>credentials/</code> 下），云端推荐改用 IAM 角色 + Amazon Bedrock，<code>openclaw.json</code> 中 <code>provider</code> 从 <code>anthropic</code> 改为 <code>amazon-bedrock</code>，删掉 <code>apiKey</code> 字段。不想折腾 IAM 的话直接保留 API Key 也能跑。</p><p><strong>坑 2 - 路径硬编码</strong>：部分配置文件里可能有 <code>/Users/yourname/.openclaw</code> 的绝对路径，需批量替换为 <code>/home/ubuntu/.openclaw</code>：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -rl <span class="string">&quot;/Users/yourname&quot;</span> ~/.openclaw/ | xargs sed -i <span class="string">&#x27;s|/Users/yourname|/home/ubuntu|g&#x27;</span></span><br></pre></td></tr></table></figure><p><strong>坑 3 - 时区</strong>：<code>cron/</code> 下的定时任务如果按北京时间写的，云端 UTC 需减 8 小时。</p><p><strong>坑 4 - 外部渠道</strong>：飞书（<code>feishu/</code>）、Telegram 等 webhook 地址需更新为新 EC2 的 IP 或域名。</p><h2 id="让-Claude-Code-后台常驻"><a href="#让-Claude-Code-后台常驻" class="headerlink" title="让 Claude Code 后台常驻"></a>让 Claude Code 后台常驻</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 用 screen 或 tmux 保持会话</span></span><br><span class="line">tmux new -s claude</span><br><span class="line">claude</span><br><span class="line"><span class="comment"># Ctrl+B D 退出但保持运行</span></span><br></pre></td></tr></table></figure><p>或者写成 systemd service 开机自启。</p><p>迁移整体不复杂，主要时间花在处理路径和认证上，大概 30-40 分钟搞定。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;把 Claude Code 从本地 Mac 迁移到 EC2，核心动机很简单：本地跑 Agent 合盖就断，定时任务不可靠。迁移后变成 7×24 不间断运行。&lt;/p&gt;
+&lt;h2 id=&quot;当前-openclaw-目录结构&quot;&gt;&lt;a href=&quot;#当前-openclaw-目录结构&quot; </summary>
+      
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>多agent vs 单agent</title>
