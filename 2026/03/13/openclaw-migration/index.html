@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"playerlt.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="把 Claude Code 从本地 Mac 迁移到 EC2，核心动机很简单：本地跑 Agent 合盖就断，定时任务不可靠。迁移后变成 7×24 不间断运行。 当前 .openclaw 目录结构12345678910111213141516~&#x2F;.openclaw&#x2F;├── openclaw.json          # 核心配置├── credentials&#x2F;           # 认证信息（本地">
+  <meta name="description" content="把 OpenClaw 从一台机器迁移到另一台，核心动机通常是：本地跑 Agent 合盖就断，定时任务不可靠，或者换了新机器。整个过程不复杂，主要注意几个坑。 .openclaw 目录结构12345678910111213141516~&#x2F;.openclaw&#x2F;├── openclaw.json          # 核心配置├── credentials&#x2F;           # 认证信息（API K">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Claude Code 迁移到 EC2：从合盖即断到 7×24 运行">
-<meta property="og:url" content="https://playerlt.github.io/2026/03/13/claude-code-ec2/index.html">
+<meta property="og:title" content="OpenClaw 换机迁移指南">
+<meta property="og:url" content="https://playerlt.github.io/2026/03/13/openclaw-migration/index.html">
 <meta property="og:site_name" content="Hamster AI 出海笔记">
-<meta property="og:description" content="把 Claude Code 从本地 Mac 迁移到 EC2，核心动机很简单：本地跑 Agent 合盖就断，定时任务不可靠。迁移后变成 7×24 不间断运行。 当前 .openclaw 目录结构12345678910111213141516~&#x2F;.openclaw&#x2F;├── openclaw.json          # 核心配置├── credentials&#x2F;           # 认证信息（本地">
+<meta property="og:description" content="把 OpenClaw 从一台机器迁移到另一台，核心动机通常是：本地跑 Agent 合盖就断，定时任务不可靠，或者换了新机器。整个过程不复杂，主要注意几个坑。 .openclaw 目录结构12345678910111213141516~&#x2F;.openclaw&#x2F;├── openclaw.json          # 核心配置├── credentials&#x2F;           # 认证信息（API K">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-03-12T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-13T03:06:13.881Z">
+<meta property="article:modified_time" content="2026-03-13T03:10:48.449Z">
 <meta property="article:author" content="Hamster">
 <meta property="article:tag" content="AI产品">
 <meta property="article:tag" content="AI出海">
@@ -42,7 +42,7 @@
 <meta property="article:tag" content="独立开发者">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://playerlt.github.io/2026/03/13/claude-code-ec2/">
+<link rel="canonical" href="https://playerlt.github.io/2026/03/13/openclaw-migration/">
 
 
 <script id="page-configurations">
@@ -55,7 +55,7 @@
   };
 </script>
 
-  <title>Claude Code 迁移到 EC2：从合盖即断到 7×24 运行 | Hamster AI 出海笔记</title>
+  <title>OpenClaw 换机迁移指南 | Hamster AI 出海笔记</title>
   
 
 
@@ -163,7 +163,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://playerlt.github.io/2026/03/13/claude-code-ec2/">
+    <link itemprop="mainEntityOfPage" href="https://playerlt.github.io/2026/03/13/openclaw-migration/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -176,7 +176,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Claude Code 迁移到 EC2：从合盖即断到 7×24 运行
+          OpenClaw 换机迁移指南
         </h1>
 
         <div class="post-meta">
@@ -187,7 +187,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2026-03-13 00:00:00 / 修改时间：11:06:13" itemprop="dateCreated datePublished" datetime="2026-03-13T00:00:00+08:00">2026-03-13</time>
+              <time title="创建时间：2026-03-13 00:00:00 / 修改时间：11:10:48" itemprop="dateCreated datePublished" datetime="2026-03-13T00:00:00+08:00">2026-03-13</time>
             </span>
 
           
@@ -201,31 +201,30 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>把 Claude Code 从本地 Mac 迁移到 EC2，核心动机很简单：本地跑 Agent 合盖就断，定时任务不可靠。迁移后变成 7×24 不间断运行。</p>
-<h2 id="当前-openclaw-目录结构"><a href="#当前-openclaw-目录结构" class="headerlink" title="当前 .openclaw 目录结构"></a>当前 .openclaw 目录结构</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">~/.openclaw/</span><br><span class="line">├── openclaw.json          # 核心配置</span><br><span class="line">├── credentials/           # 认证信息（本地 API Key 等）</span><br><span class="line">├── workspace/             # 人格、记忆、技能</span><br><span class="line">├── agents/                # Agent 配置</span><br><span class="line">├── memory/                # 记忆文件</span><br><span class="line">├── cron/                  # 定时任务</span><br><span class="line">├── identity/              # 身份配置</span><br><span class="line">├── completions/           # 补全配置</span><br><span class="line">├── delivery-queue/        # 消息队列</span><br><span class="line">├── devices/               # 设备配置</span><br><span class="line">├── canvas/                # Canvas 相关</span><br><span class="line">├── feishu/                # 飞书集成</span><br><span class="line">├── browser/               # 浏览器相关</span><br><span class="line">├── media/                 # 媒体文件</span><br><span class="line">└── logs/                  # 日志</span><br></pre></td></tr></table></figure>
+        <p>把 OpenClaw 从一台机器迁移到另一台，核心动机通常是：本地跑 Agent 合盖就断，定时任务不可靠，或者换了新机器。整个过程不复杂，主要注意几个坑。</p>
+<h2 id="openclaw-目录结构"><a href="#openclaw-目录结构" class="headerlink" title=".openclaw 目录结构"></a>.openclaw 目录结构</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">~/.openclaw/</span><br><span class="line">├── openclaw.json          # 核心配置</span><br><span class="line">├── credentials/           # 认证信息（API Key 等）</span><br><span class="line">├── workspace/             # 人格、记忆、技能</span><br><span class="line">├── agents/                # Agent 配置</span><br><span class="line">├── memory/                # 记忆文件</span><br><span class="line">├── cron/                  # 定时任务</span><br><span class="line">├── identity/              # 身份配置</span><br><span class="line">├── completions/           # 补全配置</span><br><span class="line">├── delivery-queue/        # 消息队列</span><br><span class="line">├── devices/               # 设备配置</span><br><span class="line">├── canvas/                # Canvas 相关</span><br><span class="line">├── feishu/                # 飞书集成</span><br><span class="line">├── browser/               # 浏览器相关</span><br><span class="line">├── media/                 # 媒体文件</span><br><span class="line">└── logs/                  # 日志</span><br></pre></td></tr></table></figure>
 
-<h2 id="迁移步骤"><a href="#迁移步骤" class="headerlink" title="迁移步骤"></a>迁移步骤</h2><p><strong>1. 本地打包</strong></p>
+<h2 id="迁移步骤"><a href="#迁移步骤" class="headerlink" title="迁移步骤"></a>迁移步骤</h2><p><strong>1. 旧机器打包</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~</span><br><span class="line">tar -czf openclaw-backup.tar.gz .openclaw/</span><br></pre></td></tr></table></figure>
 
-<p><strong>2. 传到 EC2</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rsync -avz openclaw-backup.tar.gz ubuntu@&lt;EC2_IP&gt;:~/</span><br></pre></td></tr></table></figure>
+<p><strong>2. 传到新机器</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 用 scp 或 rsync 均可</span></span><br><span class="line">rsync -avz openclaw-backup.tar.gz user@&lt;新机器IP&gt;:~/</span><br></pre></td></tr></table></figure>
 
-<p><strong>3. 云端解压</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh ubuntu@&lt;EC2_IP&gt;</span><br><span class="line">tar -xzf openclaw-backup.tar.gz -C ~/</span><br></pre></td></tr></table></figure>
+<p><strong>3. 新机器解压</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -xzf openclaw-backup.tar.gz -C ~/</span><br></pre></td></tr></table></figure>
 
-<p><strong>4. 启动 Claude Code</strong></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">claude</span><br></pre></td></tr></table></figure>
+<p><strong>4. 启动 OpenClaw</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openclaw</span><br></pre></td></tr></table></figure>
 
-<h2 id="四个关键坑"><a href="#四个关键坑" class="headerlink" title="四个关键坑"></a>四个关键坑</h2><p><strong>坑 1 - 认证方式</strong>：本地用 API Key（存在 <code>credentials/</code> 下），云端推荐改用 IAM 角色 + Amazon Bedrock，<code>openclaw.json</code> 中 <code>provider</code> 从 <code>anthropic</code> 改为 <code>amazon-bedrock</code>，删掉 <code>apiKey</code> 字段。不想折腾 IAM 的话直接保留 API Key 也能跑。</p>
-<p><strong>坑 2 - 路径硬编码</strong>：部分配置文件里可能有 <code>/Users/yourname/.openclaw</code> 的绝对路径，需批量替换为 <code>/home/ubuntu/.openclaw</code>：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -rl <span class="string">&quot;/Users/yourname&quot;</span> ~/.openclaw/ | xargs sed -i <span class="string">&#x27;s|/Users/yourname|/home/ubuntu|g&#x27;</span></span><br></pre></td></tr></table></figure>
+<h2 id="几个关键坑"><a href="#几个关键坑" class="headerlink" title="几个关键坑"></a>几个关键坑</h2><p><strong>坑 1 - 路径硬编码</strong>：配置文件里可能有旧机器的绝对路径，需批量替换：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -rl <span class="string">&quot;/Users/旧用户名&quot;</span> ~/.openclaw/ | xargs sed -i <span class="string">&#x27;s|/Users/旧用户名|/home/新用户名|g&#x27;</span></span><br></pre></td></tr></table></figure>
 
-<p><strong>坑 3 - 时区</strong>：<code>cron/</code> 下的定时任务如果按北京时间写的，云端 UTC 需减 8 小时。</p>
-<p><strong>坑 4 - 外部渠道</strong>：飞书（<code>feishu/</code>）、Telegram 等 webhook 地址需更新为新 EC2 的 IP 或域名。</p>
-<h2 id="让-Claude-Code-后台常驻"><a href="#让-Claude-Code-后台常驻" class="headerlink" title="让 Claude Code 后台常驻"></a>让 Claude Code 后台常驻</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 用 screen 或 tmux 保持会话</span></span><br><span class="line">tmux new -s claude</span><br><span class="line">claude</span><br><span class="line"><span class="comment"># Ctrl+B D 退出但保持运行</span></span><br></pre></td></tr></table></figure>
+<p><strong>坑 2 - 认证信息</strong>：<code>credentials/</code> 下的 API Key 直接跟着迁移即可复用。如果迁移到云服务器且支持 IAM（如 AWS），可以改用 IAM 角色，<code>openclaw.json</code> 中 <code>provider</code> 改为 <code>amazon-bedrock</code> 并删掉 <code>apiKey</code> 字段，安全性更好。</p>
+<p><strong>坑 3 - 时区</strong>：<code>cron/</code> 下的定时任务如果按本地时间写的，迁移到时区不同的服务器需要调整。比如从北京时间迁到 UTC，所有时间减 8 小时。</p>
+<p><strong>坑 4 - 外部渠道</strong>：飞书（<code>feishu/</code>）、Telegram 等 webhook 地址如果绑定了旧机器 IP，需更新为新机器的 IP 或域名。</p>
+<h2 id="服务器上保持后台运行"><a href="#服务器上保持后台运行" class="headerlink" title="服务器上保持后台运行"></a>服务器上保持后台运行</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 用 tmux 保持会话，关闭终端不中断</span></span><br><span class="line">tmux new -s openclaw</span><br><span class="line">openclaw</span><br><span class="line"><span class="comment"># Ctrl+B D 退出但保持运行，tmux attach -t openclaw 重新进入</span></span><br></pre></td></tr></table></figure>
 
-<p>或者写成 systemd service 开机自启。</p>
-<p>迁移整体不复杂，主要时间花在处理路径和认证上，大概 30-40 分钟搞定。</p>
+<p>也可以写成 systemd service 实现开机自启。</p>
 
     </div>
 
@@ -303,7 +302,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%93%E5%89%8D-openclaw-%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">当前 .openclaw 目录结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%81%E7%A7%BB%E6%AD%A5%E9%AA%A4"><span class="nav-number">2.</span> <span class="nav-text">迁移步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E4%B8%AA%E5%85%B3%E9%94%AE%E5%9D%91"><span class="nav-number">3.</span> <span class="nav-text">四个关键坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A9-Claude-Code-%E5%90%8E%E5%8F%B0%E5%B8%B8%E9%A9%BB"><span class="nav-number">4.</span> <span class="nav-text">让 Claude Code 后台常驻</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#openclaw-%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">.openclaw 目录结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%81%E7%A7%BB%E6%AD%A5%E9%AA%A4"><span class="nav-number">2.</span> <span class="nav-text">迁移步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%A0%E4%B8%AA%E5%85%B3%E9%94%AE%E5%9D%91"><span class="nav-number">3.</span> <span class="nav-text">几个关键坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E4%BF%9D%E6%8C%81%E5%90%8E%E5%8F%B0%E8%BF%90%E8%A1%8C"><span class="nav-number">4.</span> <span class="nav-text">服务器上保持后台运行</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
